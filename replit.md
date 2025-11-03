@@ -8,7 +8,7 @@ LFS (Linux From Scratch) tabanlı Linux dağıtımları için modern, gelişmiş
 - **Paralel işlemler**: Çoklu paket indirme ve kurulum
 - **Atomic güncellemeler**: Rollback desteği
 - **Transaction log**: Tüm işlemler kayıt altında
-- **Yeni paket formatı**: .lpkg (Advanced Linux Package) formatı
+- **Yeni paket formatı**: .alp (Advanced Linux Package) formatı
 
 ## Mevcut Durum
 - ✅ MVP tamamlandı ve production-ready
@@ -27,7 +27,7 @@ alp/              - Ana paket modülü
 └── transaction.py- Transaction log sistemi
 ```
 
-## Paket Formatı (.lpkg)
+## Paket Formatı (.alp)
 YAML metadata + tar.gz arşiv kombinasyonu
 - Metadata: Bağımlılıklar, versiyon, checksums
 - İçerik: Binary/source dosyalar
@@ -36,7 +36,7 @@ YAML metadata + tar.gz arşiv kombinasyonu
 
 ### Güvenlik Özellikleri
 - SHA256 checksum doğrulama
-- file:// path validation (.lpkg uzantısı kontrolü)
+- file:// path validation (.alp uzantısı kontrolü)
 - Transaction log ile audit trail
 
 ### Özellikler

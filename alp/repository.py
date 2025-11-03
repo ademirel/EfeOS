@@ -114,7 +114,7 @@ class Repository:
         if not repo_url:
             return None
         
-        return f"{repo_url}/packages/{package_name}-{version}.lpkg"
+        return f"{repo_url}/packages/{package_name}-{version}.alp"
     
     def _load_index(self, repo_name: str) -> Optional[Dict]:
         """Repository indeksini yükle"""

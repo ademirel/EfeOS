@@ -1,6 +1,6 @@
 """
 Paket format ve işleme modülü
-.lpkg format: YAML metadata + tar.gz arşiv
+.alp format: YAML metadata + tar.gz arşiv
 """
 
 import os
@@ -37,7 +37,7 @@ class PackageMetadata:
 
 
 class Package:
-    """Paket sınıfı - .lpkg dosya formatı"""
+    """Paket sınıfı - .alp dosya formatı"""
     
     def __init__(self, metadata: PackageMetadata, package_path: Optional[str] = None):
         self.metadata = metadata
@@ -93,7 +93,7 @@ class Package:
         with open(metadata_path, 'w') as f:
             yaml.dump(metadata.to_dict(), f, default_flow_style=False)
         
-        final_package_path = f"{output_path}.lpkg"
+        final_package_path = f"{output_path}.alp"
         with tarfile.open(final_package_path, "w:gz") as pkg:
             pkg.add(metadata_path, arcname="metadata.yaml")
             pkg.add(tar_path, arcname="data.tar.gz")

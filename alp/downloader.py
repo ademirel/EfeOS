@@ -32,8 +32,8 @@ class Downloader:
                 if not os.path.exists(abs_source):
                     raise FileNotFoundError(f"Kaynak dosya bulunamadı: {abs_source}")
                 
-                if not abs_source.endswith('.lpkg'):
-                    raise ValueError("Sadece .lpkg dosyaları indirilebilir")
+                if not abs_source.endswith('.alp'):
+                    raise ValueError("Sadece .alp dosyaları indirilebilir")
                 
                 shutil.copy2(abs_source, destination)
                 
@@ -80,7 +80,7 @@ class Downloader:
     
     def get_cached_package(self, package_name: str, version: str) -> Optional[str]:
         """Cache'deki paketi getir"""
-        cached_path = os.path.join(self.cache_dir, f"{package_name}-{version}.lpkg")
+        cached_path = os.path.join(self.cache_dir, f"{package_name}-{version}.alp")
         
         if os.path.exists(cached_path):
             return cached_path

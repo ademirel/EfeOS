@@ -9,7 +9,7 @@ ALP, modern paket yönetimi prensipleriyle tasarlanmış modüler bir sistemdir.
 ### 1. Package (alp/package.py)
 **Sorumluluk**: Paket formatı ve işleme
 
-- `.lpkg` format tanımı (YAML metadata + tar.gz data)
+- `.alp` format tanımı (YAML metadata + tar.gz data)
 - Paket oluşturma ve yükleme
 - SHA256 checksum hesaplama ve doğrulama
 - Paket içeriği extraction
@@ -92,7 +92,7 @@ ALP, modern paket yönetimi prensipleriyle tasarlanmış modüler bir sistemdir.
 
 **Güvenlik**:
 - file:// path validation
-- .lpkg uzantısı kontrolü
+- .alp uzantısı kontrolü
 - Dosya varlık kontrolü
 
 ### 6. Transaction (alp/transaction.py)

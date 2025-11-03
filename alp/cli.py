@@ -117,7 +117,7 @@ def install(ctx: ALPContext, packages, yes, no_deps):
         for pkg in to_install:
             pkg_name = pkg['name']
             pkg_version = pkg['version']
-            dest_path = os.path.join(ctx.downloader.cache_dir, f"{pkg_name}-{pkg_version}.lpkg")
+            dest_path = os.path.join(ctx.downloader.cache_dir, f"{pkg_name}-{pkg_version}.alp")
             
             try:
                 click.echo(f"\n📥 {pkg_name}-{pkg_version} indiriliyor...")

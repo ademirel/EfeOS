@@ -6,7 +6,7 @@ Modern, hızlı ve güvenilir paket yöneticisi - LFS tabanlı Linux dağıtıml
 
 ### ✨ Temel Özellikler
 - **Hızlı Bağımlılık Çözümleme**: Akıllı dependency resolver
-- **Yeni Paket Formatı**: `.lpkg` (YAML metadata + tar.gz)
+- **Yeni Paket Formatı**: `.alp` (YAML metadata + tar.gz)
 - **Transaction Log**: Tüm işlemler kayıt altında
 - **Checksum Doğrulama**: SHA256 ile paket güvenliği
 - **Repository Sistemi**: Merkezi paket deposu yönetimi
@@ -64,13 +64,13 @@ python alp_cli.py add-repo <isim> <url>
 python alp_cli.py list-repos
 ```
 
-## Paket Formatı (.lpkg)
+## Paket Formatı (.alp)
 
 ALP, kendi özel paket formatını kullanır:
 
 **Yapı:**
 ```
-paket-name-version.lpkg
+paket-name-version.alp
 ├── metadata.yaml    # Paket bilgileri
 └── data.tar.gz      # Paket içeriği
 ```
