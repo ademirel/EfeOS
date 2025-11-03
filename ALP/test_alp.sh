@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Change to ALP directory
+cd "$(dirname "$0")"
+
 echo "🧪 ALP Test Script"
 echo "===================="
 echo ""

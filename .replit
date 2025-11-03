@@ -18,9 +18,9 @@ args = "alp-demo"
 name = "alp-demo"
 author = "agent"
 
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "bash test_alp.sh"
-
 [workflows.workflow.metadata]
 outputType = "console"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "bash ALP/test_alp.sh"

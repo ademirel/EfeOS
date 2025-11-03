@@ -21,6 +21,7 @@ Modern, hızlı ve güvenilir paket yöneticisi - LFS tabanlı Linux dağıtıml
 ## Kurulum
 
 ```bash
+cd ALP
 pip install -r requirements.txt
 ```
 
@@ -28,7 +29,11 @@ pip install -r requirements.txt
 
 ### Temel Komutlar
 
+**Not**: Tüm komutları `ALP/` dizini içinden çalıştırın:
+
 ```bash
+cd ALP
+
 # Paket kur
 python alp_cli.py install <paket_adı>
 
@@ -101,8 +106,8 @@ files:
 ### Proje Yapısı
 
 ```
-alp/
-├── alp/
+ALP/
+├── alp/                 # Python modülü
 │   ├── __init__.py      # Paket başlatma
 │   ├── cli.py           # CLI komutları
 │   ├── database.py      # SQLite veritabanı
@@ -111,9 +116,17 @@ alp/
 │   ├── repository.py    # Repository yönetimi
 │   ├── downloader.py    # İndirme ve doğrulama
 │   └── transaction.py   # Transaction log
+├── tools/               # Yardımcı araçlar
+│   └── generate_repo_index.py
+├── demo_repo/           # Demo repository
+├── alp_data/            # Runtime data
 ├── alp_cli.py           # Ana giriş noktası
+├── test_alp.sh          # Test script
+├── create_demo_package.py
 ├── requirements.txt     # Python bağımlılıkları
-└── README.md
+├── README.md
+├── PACKAGE_GUIDE.md     # Detaylı paket yönetim kılavuzu
+└── ARCHITECTURE.md      # Mimari dökümantasyon
 ```
 
 ## Ortam Değişkenleri
@@ -123,6 +136,11 @@ ALP_DB_PATH=/var/lib/alp/packages.db      # Veritabanı konumu
 ALP_CACHE_DIR=/var/cache/alp              # Cache dizini
 ALP_LOG_DIR=/var/log/alp                  # Log dizini
 ```
+
+## Dökümantasyon
+
+- **[PACKAGE_GUIDE.md](PACKAGE_GUIDE.md)**: Paket oluşturma, kurma, güncelleme ve kaldırma için detaylı kılavuz
+- **[ARCHITECTURE.md](ARCHITECTURE.md)**: Sistem mimarisi ve tasarım kararları
 
 ## Lisans
 
