@@ -1,6 +1,6 @@
 """
-Transaction log sistemi
-Tüm işlemleri kaydeder ve rollback desteği sağlar
+Transaction log system
+Records all operations and provides rollback support
 """
 
 import json
@@ -11,7 +11,7 @@ from enum import Enum
 
 
 class TransactionType(Enum):
-    """Transaction tipleri"""
+    """Transaction types"""
     INSTALL = "install"
     REMOVE = "remove"
     UPDATE = "update"
@@ -19,7 +19,7 @@ class TransactionType(Enum):
 
 
 class TransactionStatus(Enum):
-    """Transaction durumları"""
+    """Transaction statuses"""
     PENDING = "pending"
     IN_PROGRESS = "in_progress"
     COMPLETED = "completed"
@@ -28,7 +28,7 @@ class TransactionStatus(Enum):
 
 
 class Transaction:
-    """Transaction sınıfı"""
+    """Transaction class"""
     
     def __init__(self, transaction_type: TransactionType, packages: List[str]):
         self.id = datetime.now().strftime("%Y%m%d%H%M%S%f")
@@ -40,7 +40,7 @@ class Transaction:
         self.error = None
     
     def add_action(self, action: str, details: Dict):
-        """İşlem ekle"""
+        """Add action"""
         self.actions.append({
             'action': action,
             'details': details,
@@ -48,13 +48,13 @@ class Transaction:
         })
     
     def set_status(self, status: TransactionStatus, error: Optional[str] = None):
-        """Durumu güncelle"""
+        """Update status"""
         self.status = status
         if error:
             self.error = error
     
     def to_dict(self) -> Dict:
-        """Dict'e çevir"""
+        """Convert to dict"""
         return {
             'id': self.id,
             'type': self.type.value,
@@ -67,7 +67,7 @@ class Transaction:
     
     @classmethod
     def from_dict(cls, data: Dict) -> 'Transaction':
-        """Dict'ten oluştur"""
+        """Create from dict"""
         trans = cls(
             TransactionType(data['type']),
             data['packages']
@@ -81,7 +81,7 @@ class Transaction:
 
 
 class TransactionLog:
-    """Transaction log yöneticisi"""
+    """Transaction log manager"""
     
     def __init__(self, log_dir: str = "/var/log/alp"):
         self.log_dir = log_dir
@@ -89,17 +89,17 @@ class TransactionLog:
         self._ensure_log_dir()
     
     def _ensure_log_dir(self):
-        """Log dizinini oluştur"""
+        """Create log directory"""
         if not os.path.exists(self.log_dir):
             os.makedirs(self.log_dir, exist_ok=True)
     
     def save_transaction(self, transaction: Transaction):
-        """Transaction kaydet"""
+        """Save transaction"""
         with open(self.log_file, 'a') as f:
             f.write(json.dumps(transaction.to_dict()) + '\n')
     
     def load_transactions(self, limit: Optional[int] = None) -> List[Transaction]:
-        """Transaction'ları yükle"""
+        """Load transactions"""
         if not os.path.exists(self.log_file):
             return []
         
@@ -122,18 +122,18 @@ class TransactionLog:
                         trans = Transaction.from_dict(data)
                         transactions.append(trans)
                     except json.JSONDecodeError as e:
-                        print(f"Satır {line_num} parse hatası, atlanıyor: {e}")
+                        print(f"Line {line_num} parse error, skipping: {e}")
                         continue
                     except Exception as e:
-                        print(f"Satır {line_num} işleme hatası, atlanıyor: {e}")
+                        print(f"Line {line_num} processing error, skipping: {e}")
                         continue
         except Exception as e:
-            print(f"Transaction log dosyası okuma hatası: {e}")
+            print(f"Transaction log file read error: {e}")
         
         return transactions
     
     def get_transaction(self, transaction_id: str) -> Optional[Transaction]:
-        """Belirli bir transaction getir"""
+        """Get specific transaction"""
         transactions = self.load_transactions()
         
         for trans in transactions:
@@ -143,7 +143,7 @@ class TransactionLog:
         return None
     
     def get_last_transaction(self) -> Optional[Transaction]:
-        """Son transaction'ı getir"""
+        """Get last transaction"""
         transactions = self.load_transactions(limit=1)
         
         if transactions:

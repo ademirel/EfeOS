@@ -1,5 +1,5 @@
 """
-Paket indirme ve doğrulama modülü
+Package download and verification module
 """
 
 import os
@@ -9,20 +9,20 @@ from typing import Optional, Callable
 
 
 class Downloader:
-    """Paket indirici"""
+    """Package downloader"""
     
     def __init__(self, cache_dir: str = "/var/cache/alp"):
         self.cache_dir = cache_dir
         self._ensure_cache_dir()
     
     def _ensure_cache_dir(self):
-        """Cache dizinini oluştur"""
+        """Create cache directory"""
         if not os.path.exists(self.cache_dir):
             os.makedirs(self.cache_dir, exist_ok=True)
     
     def download(self, url: str, destination: str, 
                  progress_callback: Optional[Callable] = None) -> bool:
-        """Dosya indir"""
+        """Download file"""
         try:
             if url.startswith('file://'):
                 import shutil
@@ -30,10 +30,10 @@ class Downloader:
                 
                 abs_source = os.path.abspath(source_path)
                 if not os.path.exists(abs_source):
-                    raise FileNotFoundError(f"Kaynak dosya bulunamadı: {abs_source}")
+                    raise FileNotFoundError(f"Source file not found: {abs_source}")
                 
                 if not abs_source.endswith('.alp'):
-                    raise ValueError("Sadece .alp dosyaları indirilebilir")
+                    raise ValueError("Only .alp files can be downloaded")
                 
                 shutil.copy2(abs_source, destination)
                 
@@ -62,11 +62,11 @@ class Downloader:
                 return True
         
         except Exception as e:
-            print(f"İndirme hatası: {e}")
+            print(f"Download error: {e}")
             return False
     
     def verify_checksum(self, file_path: str, expected_checksum: str) -> bool:
-        """Checksum doğrula"""
+        """Verify checksum"""
         if not os.path.exists(file_path):
             return False
         
@@ -79,7 +79,7 @@ class Downloader:
         return calculated == expected_checksum
     
     def get_cached_package(self, package_name: str, version: str) -> Optional[str]:
-        """Cache'deki paketi getir"""
+        """Get cached package"""
         cached_path = os.path.join(self.cache_dir, f"{package_name}-{version}.alp")
         
         if os.path.exists(cached_path):
@@ -88,7 +88,7 @@ class Downloader:
         return None
     
     def clean_cache(self) -> int:
-        """Cache temizle"""
+        """Clean cache"""
         count = 0
         
         if os.path.exists(self.cache_dir):
@@ -99,6 +99,6 @@ class Downloader:
                         os.unlink(file_path)
                         count += 1
                 except Exception as e:
-                    print(f"Silme hatası {filename}: {e}")
+                    print(f"Deletion error {filename}: {e}")
         
         return count

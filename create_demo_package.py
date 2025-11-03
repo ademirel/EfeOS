@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Demo paket oluşturma scripti
-ALP formatında örnek paketler oluşturur
+Demo package creation script
+Creates example packages in ALP format
 """
 
 import os
@@ -9,7 +9,7 @@ import sys
 from alp.package import Package, PackageMetadata
 
 def create_hello_world_package():
-    """Hello World paketi oluştur"""
+    """Create Hello World package"""
     
     os.makedirs("demo_packages/hello-world/usr/bin", exist_ok=True)
     
@@ -20,7 +20,7 @@ def create_hello_world_package():
     os.chmod("demo_packages/hello-world/usr/bin/hello", 0o755)
     
     metadata = {
-        'description': 'Basit Hello World uygulaması',
+        'description': 'Simple Hello World application',
         'architecture': 'x86_64',
         'dependencies': [],
         'conflicts': [],
@@ -38,21 +38,21 @@ def create_hello_world_package():
         metadata_dict=metadata
     )
     
-    print(f"✅ {pkg} oluşturuldu")
+    print(f"✅ {pkg} created")
     print(f"   Checksum: {pkg.metadata.checksum}")
-    print(f"   Boyut: {pkg.metadata.size} bytes")
+    print(f"   Size: {pkg.metadata.size} bytes")
 
 def create_example_lib_package():
-    """Example Library paketi oluştur"""
+    """Create Example Library package"""
     
     os.makedirs("demo_packages/example-lib/usr/lib", exist_ok=True)
     
     with open("demo_packages/example-lib/usr/lib/libexample.so", "w") as f:
-        f.write("// Örnek kütüphane binary dosyası\n")
+        f.write("// Example library binary file\n")
         f.write("void example_function() { return; }\n")
     
     metadata = {
-        'description': 'Örnek kütüphane paketi',
+        'description': 'Example library package',
         'architecture': 'x86_64',
         'dependencies': [],
         'conflicts': [],
@@ -70,21 +70,21 @@ def create_example_lib_package():
         metadata_dict=metadata
     )
     
-    print(f"✅ {pkg} oluşturuldu")
+    print(f"✅ {pkg} created")
     print(f"   Checksum: {pkg.metadata.checksum}")
-    print(f"   Boyut: {pkg.metadata.size} bytes")
+    print(f"   Size: {pkg.metadata.size} bytes")
 
 if __name__ == '__main__':
-    print("📦 Demo paketleri oluşturuluyor...\n")
+    print("📦 Creating demo packages...\n")
     
     try:
         create_hello_world_package()
         print()
         create_example_lib_package()
-        print("\n✅ Tüm demo paketleri oluşturuldu!")
-        print("\nDemo repository'yi kullanmak için:")
+        print("\n✅ All demo packages created!")
+        print("\nTo use the demo repository:")
         print("  python alp_cli.py add-repo demo-repo file://$(pwd)/demo_repo")
         
     except Exception as e:
-        print(f"\n❌ Hata: {e}")
+        print(f"\n❌ Error: {e}")
         sys.exit(1)

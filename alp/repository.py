@@ -1,5 +1,5 @@
 """
-Repository yönetimi ve paket indeksi
+Repository management and package index
 """
 
 import os
@@ -9,7 +9,7 @@ from typing import List, Dict, Optional
 
 
 class Repository:
-    """Repository sınıfı"""
+    """Repository class"""
     
     def __init__(self, database, cache_dir: str = "/var/cache/alp/repos"):
         self.database = database
@@ -18,12 +18,12 @@ class Repository:
         self._index_cache = {}
     
     def _ensure_cache_dir(self):
-        """Cache dizinini oluştur"""
+        """Create cache directory"""
         if not os.path.exists(self.cache_dir):
             os.makedirs(self.cache_dir, exist_ok=True)
     
     def update_index(self, repo_url: str) -> bool:
-        """Repository indeksini güncelle"""
+        """Update repository index"""
         try:
             index_url = f"{repo_url}/index.json"
             
@@ -47,11 +47,11 @@ class Repository:
             return True
         
         except Exception as e:
-            print(f"İndeks güncelleme hatası: {e}")
+            print(f"Index update error: {e}")
             return False
     
     def update_all_indexes(self) -> Dict[str, bool]:
-        """Tüm repository indekslerini güncelle"""
+        """Update all repository indexes"""
         repos = self.database.list_repositories()
         results = {}
         
@@ -62,7 +62,7 @@ class Repository:
         return results
     
     def search_package(self, query: str) -> List[Dict]:
-        """Paket ara"""
+        """Search for package"""
         results = []
         repos = self.database.list_repositories()
         
@@ -83,7 +83,7 @@ class Repository:
         return results
     
     def get_package_metadata(self, package_name: str) -> Optional[Dict]:
-        """Paket metadata getir"""
+        """Get package metadata"""
         repos = self.database.list_repositories()
         
         for repo in repos:
@@ -103,7 +103,7 @@ class Repository:
         return None
     
     def get_package_url(self, package_name: str, version: str) -> Optional[str]:
-        """Paket indirme URL'ini getir"""
+        """Get package download URL"""
         metadata = self.get_package_metadata(package_name)
         
         if not metadata:
@@ -117,7 +117,7 @@ class Repository:
         return f"{repo_url}/packages/{package_name}-{version}.alp"
     
     def _load_index(self, repo_name: str) -> Optional[Dict]:
-        """Repository indeksini yükle"""
+        """Load repository index"""
         if repo_name in self._index_cache:
             return self._index_cache[repo_name]
         
@@ -132,11 +132,11 @@ class Repository:
                 self._index_cache[repo_name] = index_data
                 return index_data
         except Exception as e:
-            print(f"İndeks yükleme hatası: {e}")
+            print(f"Index load error: {e}")
             return None
     
     def list_available_packages(self) -> List[Dict]:
-        """Tüm mevcut paketleri listele"""
+        """List all available packages"""
         all_packages = []
         repos = self.database.list_repositories()
         

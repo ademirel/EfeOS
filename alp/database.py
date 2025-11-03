@@ -1,6 +1,6 @@
 """
-SQLite veritabanı yönetimi
-Kurulu paketleri ve durumu takip eder
+SQLite database management
+Tracks installed packages and their status
 """
 
 import sqlite3
@@ -10,7 +10,7 @@ from datetime import datetime
 
 
 class PackageDatabase:
-    """Paket veritabanı sınıfı"""
+    """Package database class"""
     
     def __init__(self, db_path: str = "/var/lib/alp/packages.db"):
         self.db_path = db_path
@@ -20,14 +20,14 @@ class PackageDatabase:
         self._init_database()
     
     def _ensure_db_dir(self):
-        """Veritabanı dizinini oluştur"""
+        """Create database directory"""
         import os
         db_dir = os.path.dirname(self.db_path)
         if not os.path.exists(db_dir):
             os.makedirs(db_dir, exist_ok=True)
     
     def _init_database(self):
-        """Veritabanı tablolarını oluştur"""
+        """Create database tables"""
         cursor = self.conn.cursor()
         
         cursor.execute("""
@@ -79,7 +79,7 @@ class PackageDatabase:
         self.conn.commit()
     
     def add_package(self, metadata: Dict) -> int:
-        """Yeni paket ekle veya güncelle"""
+        """Add new package or update existing"""
         cursor = self.conn.cursor()
         
         cursor.execute("SELECT id FROM packages WHERE name = ?", (metadata['name'],))
@@ -126,7 +126,7 @@ class PackageDatabase:
             
             package_id = cursor.lastrowid
             if package_id is None:
-                raise ValueError("Paket eklenemedi")
+                raise ValueError("Package could not be added")
         
         for dep in metadata.get('dependencies', []):
             dep_parts = dep.split('>=') if '>=' in dep else [dep, '']
@@ -145,7 +145,7 @@ class PackageDatabase:
         return package_id
     
     def remove_package(self, package_name: str) -> bool:
-        """Paketi kaldır"""
+        """Remove package"""
         cursor = self.conn.cursor()
         
         cursor.execute("SELECT id FROM packages WHERE name = ?", (package_name,))
@@ -164,7 +164,7 @@ class PackageDatabase:
         return True
     
     def get_package(self, package_name: str) -> Optional[Dict]:
-        """Paket bilgisi getir (tüm metadata ile)"""
+        """Get package information (with all metadata)"""
         cursor = self.conn.cursor()
         
         cursor.execute("SELECT * FROM packages WHERE name = ?", (package_name,))
@@ -205,7 +205,7 @@ class PackageDatabase:
         return package_data
     
     def list_packages(self) -> List[Dict]:
-        """Tüm paketleri listele"""
+        """List all packages"""
         cursor = self.conn.cursor()
         cursor.execute("SELECT name, version, description, size FROM packages ORDER BY name")
         
@@ -216,14 +216,14 @@ class PackageDatabase:
         return packages
     
     def is_installed(self, package_name: str) -> bool:
-        """Paket kurulu mu?"""
+        """Is package installed?"""
         cursor = self.conn.cursor()
         cursor.execute("SELECT COUNT(*) FROM packages WHERE name = ?", (package_name,))
         count = cursor.fetchone()[0]
         return count > 0
     
     def add_repository(self, name: str, url: str, priority: int = 100) -> None:
-        """Repository ekle"""
+        """Add repository"""
         cursor = self.conn.cursor()
         cursor.execute("""
             INSERT OR REPLACE INTO repositories (name, url, priority)
@@ -232,7 +232,7 @@ class PackageDatabase:
         self.conn.commit()
     
     def list_repositories(self) -> List[Dict]:
-        """Repository listesini getir"""
+        """Get repository list"""
         cursor = self.conn.cursor()
         cursor.execute("SELECT * FROM repositories WHERE enabled = 1 ORDER BY priority DESC")
         
@@ -243,5 +243,5 @@ class PackageDatabase:
         return repos
     
     def close(self):
-        """Veritabanı bağlantısını kapat"""
+        """Close database connection"""
         self.conn.close()
