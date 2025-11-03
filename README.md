@@ -126,7 +126,9 @@ ALP_LOG_DIR=/var/log/alp                  # Log dizini
 
 ## Lisans
 
-MIT License
+Bu proje GNU General Public License v3.0 (GPLv3) altında lisanslanmıştır.
+
+Daha fazla bilgi için [LICENSE](LICENSE) dosyasına bakın veya https://www.gnu.org/licenses/gpl-3.0.html adresini ziyaret edin.
 
 ## Katkıda Bulunma
 
