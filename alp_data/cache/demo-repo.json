@@ -6,7 +6,7 @@
     {
       "name": "hello-world",
       "version": "1.0.0",
-      "description": "Basit Hello World uygulamas\u0131",
+      "description": "Simple Hello World application",
       "architecture": "x86_64",
       "dependencies": [],
       "conflicts": [],
@@ -25,7 +25,7 @@
     {
       "name": "example-lib",
       "version": "2.1.0",
-      "description": "\u00d6rnek k\u00fct\u00fcphane paketi",
+      "description": "Example library package",
       "architecture": "x86_64",
       "dependencies": [],
       "conflicts": [],
@@ -44,7 +44,7 @@
     {
       "name": "myapp",
       "version": "3.0.1",
-      "description": "Ba\u011f\u0131ml\u0131l\u0131kl\u0131 \u00f6rnek uygulama",
+      "description": "Example application with dependencies",
       "architecture": "x86_64",
       "dependencies": [
         "example-lib>=2.0.0",
