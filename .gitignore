@@ -25,3 +25,4 @@ ENV/
 *.sqlite3
 *.log
 .DS_Store
+.replit
