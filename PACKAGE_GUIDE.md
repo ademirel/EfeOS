@@ -15,92 +15,258 @@ This guide covers the essential operations for managing packages with ALP (Advan
 
 ## Creating a New Package
 
-### Package Structure
+### Overview
 
-ALP packages use the `.alp` format, which combines a YAML metadata file with a tar.gz archive of files.
+Creating an ALP package involves three main steps:
+1. **Download and compile** the source code
+2. **Install to a staging directory** using DESTDIR
+3. **Create the .alp package** (ALP automatically scans all files)
 
-### Step 1: Prepare Your Files
+### Step 1: Download and Compile Source
 
-Organize your files in a directory structure:
+Download and build your software from source:
 
+```bash
+# Example: Building hello-world application
+wget https://example.com/hello-world-1.0.0.tar.gz
+tar xzf hello-world-1.0.0.tar.gz
+cd hello-world-1.0.0
+
+# Configure and compile
+./configure --prefix=/usr
+make
 ```
-my-package/
-├── usr/
-│   ├── bin/
-│   │   └── myapp
-│   └── lib/
-│       └── libmyapp.so
-└── etc/
-    └── myapp.conf
+
+### Step 2: Install to Staging Directory
+
+**Important**: Never install directly to `/usr`! Use `DESTDIR` to install to a temporary directory:
+
+```bash
+# Create staging directory
+mkdir -p /tmp/hello-world-package
+
+# Install to staging directory (DESTDIR method)
+make install DESTDIR=/tmp/hello-world-package
+
+# Now /tmp/hello-world-package contains the organized structure:
+# /tmp/hello-world-package/
+#   └── usr/
+#       ├── bin/
+#       │   └── hello
+#       ├── lib/
+#       │   └── libhello.so.1.0.0
+#       ├── share/
+#       │   ├── man/
+#       │   │   └── man1/
+#       │   │       └── hello.1
+#       │   └── doc/
+#       │       └── hello/
+#       │           └── README
+#       └── include/
+#           └── hello.h
 ```
 
-### Step 2: Create Package Metadata
+### Step 3: Create ALP Package
 
-Create a Python script to generate your package:
+**Key Feature**: ALP automatically discovers ALL files in the staging directory - you don't need to list them manually!
 
 ```python
 #!/usr/bin/env python3
 from alp.package import Package
 
+# Define metadata (NO file list needed!)
 metadata = {
-    'description': 'My awesome application',
+    'description': 'Hello World application with libraries',
     'architecture': 'x86_64',
     'dependencies': ['glibc>=2.35.0'],
     'conflicts': [],
-    'provides': ['myapp'],
+    'provides': ['hello'],
     'maintainer': 'you@example.com',
-    'homepage': 'https://example.com/myapp',
+    'homepage': 'https://example.com/hello-world',
     'license': 'MIT'
 }
 
+# Create package - automatically scans ALL files in staging directory
 pkg = Package.create_package(
-    name='myapp',
+    name='hello-world',
     version='1.0.0',
-    source_dir='my-package',
-    output_path='myapp-1.0.0',
+    source_dir='/tmp/hello-world-package',  # Staging directory
+    output_path='hello-world-1.0.0',
     metadata_dict=metadata
 )
 
-print(f"Package created: {pkg}")
-print(f"Checksum: {pkg.metadata.checksum}")
+print(f"✅ Package created: {pkg}")
+print(f"   Checksum: {pkg.metadata.checksum}")
+print(f"   Size: {pkg.metadata.size} bytes")
+print(f"   Files: {len(pkg.metadata.files)} files automatically discovered")
+
+# The package file list is in pkg.metadata.files
+for f in pkg.metadata.files:
+    print(f"     - {f}")
 ```
 
-### Step 3: Create Repository Index
+**What happens automatically**:
+- ✅ Recursively scans `/tmp/hello-world-package`
+- ✅ Finds ALL files (binaries, libraries, configs, docs, etc.)
+- ✅ Creates file list automatically
+- ✅ Calculates package size
+- ✅ Generates SHA-256 checksum
+- ✅ Creates `hello-world-1.0.0.alp` package
 
-Create an `index.json` file for your repository:
+### Step 4: Generate Repository Index
 
-```json
-{
-  "name": "my-repo",
-  "description": "My Package Repository",
-  "version": "1.0",
-  "packages": [
-    {
-      "name": "myapp",
-      "version": "1.0.0",
-      "description": "My awesome application",
-      "architecture": "x86_64",
-      "dependencies": ["glibc>=2.35.0"],
-      "conflicts": [],
-      "provides": ["myapp"],
-      "maintainer": "you@example.com",
-      "homepage": "https://example.com/myapp",
-      "license": "MIT",
-      "size": 16384,
-      "checksum": "your_package_checksum_here",
-      "files": ["usr/bin/myapp", "usr/lib/libmyapp.so", "etc/myapp.conf"]
+Create a script to automatically generate `index.json`:
+
+```python
+#!/usr/bin/env python3
+"""
+Generate repository index from .alp packages
+"""
+import json
+import os
+from alp.package import Package
+
+def generate_repo_index(packages_dir, repo_name, repo_description):
+    """Scan packages directory and generate index.json"""
+    
+    packages = []
+    
+    # Find all .alp files
+    for filename in os.listdir(packages_dir):
+        if filename.endswith('.alp'):
+            pkg_path = os.path.join(packages_dir, filename)
+            
+            # Load package metadata
+            pkg = Package.load_package(pkg_path)
+            meta = pkg.metadata
+            
+            # Add to packages list
+            packages.append({
+                'name': meta.name,
+                'version': meta.version,
+                'description': meta.description,
+                'architecture': meta.architecture,
+                'dependencies': meta.dependencies,
+                'conflicts': meta.conflicts,
+                'provides': meta.provides,
+                'maintainer': meta.maintainer,
+                'homepage': meta.homepage,
+                'license': meta.license,
+                'size': meta.size,
+                'checksum': meta.checksum,
+                'files': meta.files  # Automatically included
+            })
+    
+    # Create index
+    index = {
+        'name': repo_name,
+        'description': repo_description,
+        'version': '1.0',
+        'packages': packages
     }
-  ]
+    
+    # Write index.json
+    index_path = os.path.join(os.path.dirname(packages_dir), 'index.json')
+    with open(index_path, 'w') as f:
+        json.dump(index, f, indent=2)
+    
+    print(f"✅ Repository index generated: {index_path}")
+    print(f"   Packages: {len(packages)}")
+    for pkg in packages:
+        print(f"     - {pkg['name']}-{pkg['version']} ({len(pkg['files'])} files)")
+
+# Usage
+generate_repo_index(
+    packages_dir='my-repo/packages',
+    repo_name='my-repo',
+    repo_description='My Package Repository'
+)
+```
+
+### Complete Example: Building GCC Package
+
+Here's a real-world example for a large package with thousands of files:
+
+```bash
+#!/bin/bash
+# build_gcc_package.sh
+
+set -e
+
+# 1. Download and extract
+wget https://ftp.gnu.org/gnu/gcc/gcc-11.2.0/gcc-11.2.0.tar.gz
+tar xzf gcc-11.2.0.tar.gz
+cd gcc-11.2.0
+
+# 2. Configure
+mkdir build && cd build
+../configure --prefix=/usr \
+             --enable-languages=c,c++ \
+             --disable-multilib
+
+# 3. Compile (this may take hours!)
+make -j$(nproc)
+
+# 4. Install to staging directory
+STAGING_DIR="/tmp/gcc-package"
+rm -rf "$STAGING_DIR"
+make install DESTDIR="$STAGING_DIR"
+
+# 5. Create ALP package with Python
+cd /path/to/packaging
+python3 << 'EOF'
+from alp.package import Package
+
+metadata = {
+    'description': 'GNU Compiler Collection',
+    'architecture': 'x86_64',
+    'dependencies': ['glibc>=2.35.0', 'binutils>=2.38'],
+    'conflicts': [],
+    'provides': ['gcc', 'g++', 'cc', 'c++'],
+    'maintainer': 'packager@example.com',
+    'homepage': 'https://gcc.gnu.org',
+    'license': 'GPL-3.0'
 }
+
+# Automatically discovers ALL files (thousands of them!)
+pkg = Package.create_package(
+    name='gcc',
+    version='11.2.0',
+    source_dir='/tmp/gcc-package',
+    output_path='gcc-11.2.0',
+    metadata_dict=metadata
+)
+
+print(f"Package created with {len(pkg.metadata.files)} files")
+# No need to list files manually!
+EOF
+
+echo "✅ GCC package created successfully"
 ```
 
-### Repository Directory Structure
+### Directory Structure Best Practices
+
+Follow the Filesystem Hierarchy Standard (FHS):
 
 ```
-my-repo/
-├── index.json
-└── packages/
-    └── myapp-1.0.0.alp
+staging-dir/
+├── usr/
+│   ├── bin/          # User binaries
+│   ├── sbin/         # System binaries
+│   ├── lib/          # Libraries
+│   ├── lib64/        # 64-bit libraries
+│   ├── include/      # Header files
+│   ├── share/        # Architecture-independent data
+│   │   ├── man/      # Manual pages
+│   │   ├── doc/      # Documentation
+│   │   ├── info/     # Info pages
+│   │   └── locale/   # Localization files
+│   └── src/          # Source code
+├── etc/              # Configuration files
+├── var/              # Variable data
+│   ├── lib/          # State information
+│   └── log/          # Log files
+└── opt/              # Optional packages
 ```
 
 ---
@@ -375,53 +541,117 @@ export ALP_LOG_DIR="/custom/path/logs"
 
 ---
 
-## Examples
+## Advanced Packaging Tips
 
-### Complete Workflow Example
+### Handling Large Packages
+
+For packages with thousands of files (like GCC, LLVM, etc.):
+
+1. **Use DESTDIR consistently**: Always install to a staging directory
+2. **Verify installation**: Check that all necessary files are in staging
+3. **Let ALP scan automatically**: No manual file listing needed
+4. **Test the package**: Extract and verify before publishing
 
 ```bash
-# 1. Add a repository
-python alp_cli.py add-repo my-repo "https://repo.example.com"
+# After creating package, verify it
+python3 << 'EOF'
+from alp.package import Package
 
-# 2. Update repository indexes
-python alp_cli.py update
+pkg = Package.load_package('gcc-11.2.0.alp')
+print(f"Package: {pkg.metadata.name}-{pkg.metadata.version}")
+print(f"Total files: {len(pkg.metadata.files)}")
+print(f"Size: {pkg.metadata.size / (1024*1024):.2f} MB")
+print(f"Checksum: {pkg.metadata.checksum}")
 
-# 3. Search for a package
-python alp_cli.py search webserver
-
-# 4. Install a package with dependencies
-python alp_cli.py install nginx
-
-# 5. List installed packages
-python alp_cli.py list
-
-# 6. View transaction history
-python alp_cli.py history
-
-# 7. Remove a package
-python alp_cli.py remove nginx
-
-# 8. Clean cache
-python alp_cli.py clean
+# Check important files
+important_files = ['usr/bin/gcc', 'usr/bin/g++', 'usr/lib/gcc']
+for f in important_files:
+    found = any(f in path for path in pkg.metadata.files)
+    status = "✅" if found else "❌"
+    print(f"{status} {f}")
+EOF
 ```
 
-### Creating and Using a Local Repository
+### Splitting Large Packages
+
+For very large software, consider splitting into multiple packages:
 
 ```bash
-# 1. Create your packages
-python create_my_packages.py
+# Example: Split GCC into multiple packages
+# gcc-11.2.0.alp          (core compiler)
+# gcc-doc-11.2.0.alp      (documentation)
+# gcc-locales-11.2.0.alp  (translations)
+# libstdc++-11.2.0.alp    (C++ standard library)
 
-# 2. Set up repository structure
-mkdir -p my-repo/packages
-mv *.alp my-repo/packages/
-cp index.json my-repo/
+# Each can be created from filtered staging directories
+```
 
-# 3. Add the repository
-python alp_cli.py add-repo local "file://$(pwd)/my-repo"
+### Build Automation Script
 
-# 4. Update and install
-python alp_cli.py update
-python alp_cli.py install my-package
+Save this as `build_and_package.sh`:
+
+```bash
+#!/bin/bash
+# Automated package building script
+
+PACKAGE_NAME="$1"
+PACKAGE_VERSION="$2"
+SOURCE_URL="$3"
+
+if [ $# -ne 3 ]; then
+    echo "Usage: $0 <name> <version> <source_url>"
+    exit 1
+fi
+
+set -e
+
+STAGING_DIR="/tmp/${PACKAGE_NAME}-staging"
+BUILD_DIR="/tmp/${PACKAGE_NAME}-build"
+
+# Clean previous builds
+rm -rf "$STAGING_DIR" "$BUILD_DIR"
+
+# Download and extract
+cd /tmp
+wget -O "${PACKAGE_NAME}.tar.gz" "$SOURCE_URL"
+tar xzf "${PACKAGE_NAME}.tar.gz"
+cd "${PACKAGE_NAME}-${PACKAGE_VERSION}"
+
+# Configure and build
+./configure --prefix=/usr
+make -j$(nproc)
+
+# Install to staging
+make install DESTDIR="$STAGING_DIR"
+
+# Create ALP package
+python3 << EOF
+from alp.package import Package
+
+metadata = {
+    'description': '${PACKAGE_NAME} application',
+    'architecture': 'x86_64',
+    'dependencies': [],
+    'conflicts': [],
+    'provides': ['${PACKAGE_NAME}'],
+    'maintainer': 'auto-packager@example.com',
+    'homepage': 'https://example.com',
+    'license': 'Unknown'
+}
+
+pkg = Package.create_package(
+    name='${PACKAGE_NAME}',
+    version='${PACKAGE_VERSION}',
+    source_dir='${STAGING_DIR}',
+    output_path='${PACKAGE_NAME}-${PACKAGE_VERSION}',
+    metadata_dict=metadata
+)
+
+print(f"✅ Created: {pkg}")
+print(f"   Files: {len(pkg.metadata.files)}")
+EOF
+
+echo "✅ Package built successfully: ${PACKAGE_NAME}-${PACKAGE_VERSION}.alp"
 ```
 
 ---
@@ -465,17 +695,27 @@ python alp_cli.py install my-package
 - Re-download the package with `python alp_cli.py clean` then retry
 - Verify package integrity in the repository
 
+### Too Many Files Error
+
+If you have millions of files, consider:
+- Splitting package into smaller sub-packages
+- Excluding unnecessary files (temp files, build artifacts)
+- Using compression more efficiently
+
 ---
 
 ## Best Practices
 
-1. **Always Update First**: Run `python alp_cli.py update` before installing packages
-2. **Check Dependencies**: Use `python alp_cli.py search` to verify package availability
-3. **Review Transaction History**: Monitor installations with `python alp_cli.py history`
-4. **Clean Regularly**: Free up space with `python alp_cli.py clean`
-5. **Use Version Pinning**: Specify exact versions in dependencies when needed
-6. **Test in Isolation**: Test new packages before deploying to production
-7. **Backup Database**: Keep backups of your package database before major changes
+1. **Always Use DESTDIR**: Never install directly to system directories during packaging
+2. **Automatic File Discovery**: Let ALP scan files - don't list them manually
+3. **Verify Before Publishing**: Always test your packages before adding to repository
+4. **Update First**: Run `python alp_cli.py update` before installing packages
+5. **Check Dependencies**: Use `python alp_cli.py search` to verify package availability
+6. **Review Transaction History**: Monitor installations with `python alp_cli.py history`
+7. **Clean Regularly**: Free up space with `python alp_cli.py clean`
+8. **Use Version Pinning**: Specify exact versions in dependencies when needed
+9. **Split Large Packages**: Consider splitting documentation, locales, development files
+10. **Automate Builds**: Use scripts for reproducible package builds
 
 ---
 
