@@ -1,90 +1,91 @@
 # ALP - Advanced Linux Packager
 
-Modern, hızlı ve güvenilir paket yöneticisi - LFS tabanlı Linux dağıtımları için.
+Modern, fast, and reliable package manager for LFS-based Linux distributions.
 
-## Özellikler
+## Features
 
-### ✨ Temel Özellikler
-- **Hızlı Bağımlılık Çözümleme**: Akıllı dependency resolver
-- **Yeni Paket Formatı**: `.alp` (YAML metadata + tar.gz)
-- **Transaction Log**: Tüm işlemler kayıt altında
-- **Checksum Doğrulama**: SHA256 ile paket güvenliği
-- **Repository Sistemi**: Merkezi paket deposu yönetimi
+### ✨ Core Features
+- **Fast Dependency Resolution**: Intelligent dependency resolver
+- **New Package Format**: `.alp` (YAML metadata + tar.gz)
+- **Transaction Log**: All operations tracked
+- **Checksum Verification**: SHA256 package security
+- **Repository System**: Centralized package repository management
+- **Automatic File Discovery**: No manual file listing needed - supports packages with thousands of files
 
-### 🚀 Gelecek Özellikler
-- Atomic güncellemeler ve rollback desteği
-- Paralel paket indirme ve kurulum
-- Delta paketler (bandwidth optimizasyonu)
-- Kaynak tabanlı paket derleme
-- GUI arayüz (GTK/Qt)
+### 🚀 Future Features
+- Atomic updates and rollback support
+- Parallel package download and installation
+- Delta packages (bandwidth optimization)
+- Source-based package compilation
+- GUI interface (GTK/Qt)
 
-## Kurulum
+## Installation
 
 ```bash
 cd ALP
 pip install -r requirements.txt
 ```
 
-## Kullanım
+## Usage
 
-### Temel Komutlar
+### Basic Commands
 
-**Not**: Tüm komutları `ALP/` dizini içinden çalıştırın:
+**Note**: Run all commands from the `ALP/` directory:
 
 ```bash
 cd ALP
 
-# Paket kur
-python alp_cli.py install <paket_adı>
+# Install package
+python alp_cli.py install <package_name>
 
-# Paket kaldır
-python alp_cli.py remove <paket_adı>
+# Remove package
+python alp_cli.py remove <package_name>
 
-# Paket ara
-python alp_cli.py search <arama_terimi>
+# Search for package
+python alp_cli.py search <search_term>
 
-# Kurulu paketleri listele
+# List installed packages
 python alp_cli.py list
 
-# Tüm mevcut paketleri göster
+# List all available packages
 python alp_cli.py list --all
 
-# Repository güncelle
+# Update repository indexes
 python alp_cli.py update
 
-# İşlem geçmişi
+# View transaction history
 python alp_cli.py history
 
-# Cache temizle
+# Clean cache
 python alp_cli.py clean
 ```
 
-### Repository Yönetimi
+### Repository Management
 
 ```bash
-# Repository ekle
-python alp_cli.py add-repo <isim> <url>
+# Add repository
+python alp_cli.py add-repo <name> <url>
 
-# Repository'leri listele
+# List repositories
 python alp_cli.py list-repos
 ```
 
-## Paket Formatı (.alp)
+## Package Format (.alp)
 
-ALP, kendi özel paket formatını kullanır:
+ALP uses its own custom package format:
 
-**Yapı:**
+**Structure:**
 ```
-paket-name-version.alp
-├── metadata.yaml    # Paket bilgileri
-└── data.tar.gz      # Paket içeriği
+package-name-version.alp
+├── metadata.yaml    # Package information
+└── data.tar.gz      # Package contents
 ```
 
-**metadata.yaml örneği:**
+**metadata.yaml example:**
 ```yaml
 name: example-package
 version: 1.0.0
-description: Örnek paket
+description: Example package
 architecture: x86_64
 dependencies:
   - gcc>=11.0
@@ -101,53 +102,76 @@ files:
   - lib/libexample.so
 ```
 
-## Geliştirme
+## Development
 
-### Proje Yapısı
+### Project Structure
 
 ```
 ALP/
-├── alp/                 # Python modülü
-│   ├── __init__.py      # Paket başlatma
-│   ├── cli.py           # CLI komutları
-│   ├── database.py      # SQLite veritabanı
-│   ├── resolver.py      # Bağımlılık çözümleyici
-│   ├── package.py       # Paket format işleme
-│   ├── repository.py    # Repository yönetimi
-│   ├── downloader.py    # İndirme ve doğrulama
+├── alp/                 # Python module
+│   ├── __init__.py      # Package initialization
+│   ├── cli.py           # CLI commands
+│   ├── database.py      # SQLite database
+│   ├── resolver.py      # Dependency resolver
+│   ├── package.py       # Package format handling
+│   ├── repository.py    # Repository management
+│   ├── downloader.py    # Download and verification
 │   └── transaction.py   # Transaction log
-├── tools/               # Yardımcı araçlar
+├── tools/               # Utility tools
 │   └── generate_repo_index.py
+├── examples/            # Build system examples
 ├── demo_repo/           # Demo repository
 ├── alp_data/            # Runtime data
-├── alp_cli.py           # Ana giriş noktası
+├── alp_cli.py           # Main entry point
 ├── test_alp.sh          # Test script
 ├── create_demo_package.py
-├── requirements.txt     # Python bağımlılıkları
+├── requirements.txt     # Python dependencies
 ├── README.md
-├── PACKAGE_GUIDE.md     # Detaylı paket yönetim kılavuzu
-└── ARCHITECTURE.md      # Mimari dökümantasyon
+├── PACKAGE_GUIDE.md     # Detailed package management guide
+└── ARCHITECTURE.md      # Architecture documentation
 ```
 
-## Ortam Değişkenleri
+## Environment Variables
 
 ```bash
-ALP_DB_PATH=/var/lib/alp/packages.db      # Veritabanı konumu
-ALP_CACHE_DIR=/var/cache/alp              # Cache dizini
-ALP_LOG_DIR=/var/log/alp                  # Log dizini
+ALP_DB_PATH=/var/lib/alp/packages.db      # Database location
+ALP_CACHE_DIR=/var/cache/alp              # Cache directory
+ALP_LOG_DIR=/var/log/alp                  # Log directory
 ```
 
-## Dökümantasyon
+## Documentation
 
-- **[PACKAGE_GUIDE.md](PACKAGE_GUIDE.md)**: Paket oluşturma, kurma, güncelleme ve kaldırma için detaylı kılavuz
-- **[ARCHITECTURE.md](ARCHITECTURE.md)**: Sistem mimarisi ve tasarım kararları
+- **[PACKAGE_GUIDE.md](PACKAGE_GUIDE.md)**: Detailed guide for package creation, installation, updates, and removal
+- **[ARCHITECTURE.md](ARCHITECTURE.md)**: System architecture and design decisions
+- **[examples/](examples/)**: Build examples for different build systems (CMake, Autotools, Cargo, etc.)
 
-## Lisans
+## Key Concepts
 
-Bu proje GNU General Public License v3.0 (GPLv3) altında lisanslanmıştır.
+### DESTDIR-Based Packaging
 
-Daha fazla bilgi için [LICENSE](LICENSE) dosyasına bakın veya https://www.gnu.org/licenses/gpl-3.0.html adresini ziyaret edin.
+ALP uses the DESTDIR approach for clean package creation:
 
-## Katkıda Bulunma
+1. **Compile source code**: `./configure && make` (or CMake, Meson, etc.)
+2. **Install to staging**: `make install DESTDIR=/tmp/staging`
+3. **Create package**: ALP automatically scans all files in staging directory
+4. **No manual file listing**: Even packages with thousands of files are handled automatically
 
-Katkılarınızı bekliyoruz! Pull request göndermekten çekinmeyin.
+### Supported Build Systems
+
+- ✅ Autotools (configure/make)
+- ✅ CMake
+- ✅ Meson/Ninja
+- ✅ Cargo (Rust)
+- ✅ Go
+- ✅ Python (setuptools/poetry)
+- ✅ Any build system supporting DESTDIR
+
+## License
+
+This project is licensed under the GNU General Public License v3.0 (GPLv3).
+
+For more information, see the [LICENSE](LICENSE) file or visit https://www.gnu.org/licenses/gpl-3.0.html
+
+## Contributing
+
+Contributions are welcome! Feel free to submit pull requests.

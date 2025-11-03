@@ -1,113 +1,153 @@
 # ALP - Advanced Linux Packager
 
-## Proje Özeti
-LFS (Linux From Scratch) tabanlı Linux dağıtımları için modern, gelişmiş paket yöneticisi.
+## Project Overview
+Modern, advanced package manager for LFS (Linux From Scratch) based Linux distributions.
 
-## Hedef Özellikler
-- **Hızlı bağımlılık çözümleme**: Gelişmiş dependency resolver
-- **Paralel işlemler**: Çoklu paket indirme ve kurulum
-- **Atomic güncellemeler**: Rollback desteği
-- **Transaction log**: Tüm işlemler kayıt altında
-- **Yeni paket formatı**: .alp (Advanced Linux Package) formatı
+## Target Features
+- **Fast dependency resolution**: Advanced dependency resolver
+- **Parallel operations**: Multi-package download and installation
+- **Atomic updates**: Rollback support
+- **Transaction log**: All operations tracked
+- **New package format**: .alp (Advanced Linux Package) format
 
-## Mevcut Durum
-- ✅ MVP tamamlandı ve production-ready
-- CLI aracı tam fonksiyonel (GUI sonraki aşamada)
-- Tüm kritik hatalar düzeltildi ve architect onaylandı
-- ✅ Tüm proje dosyaları ALP/ ana klasörü altında organize edildi
+## Current Status
+- ✅ MVP completed and production-ready
+- CLI tool fully functional (GUI in next phase)
+- All critical bugs fixed and architect approved
+- ✅ All project files organized under ALP/ main folder
+- ✅ Full English localization (all user-facing text)
 
-## Proje Yapısı
+## Project Structure
 ```
 ALP/
-├── alp/              - Ana paket modülü
-│   ├── cli.py        - CLI komutları (install, remove, update, search, list)
-│   ├── database.py   - SQLite veritabanı yönetimi
-│   ├── resolver.py   - Bağımlılık çözümleyici
-│   ├── package.py    - Paket format ve işleme (otomatik dosya taraması)
-│   ├── repository.py - Repository yönetimi
-│   ├── downloader.py - İndirme ve doğrulama
-│   └── transaction.py- Transaction log sistemi
-├── tools/            - Yardımcı araçlar
-│   └── generate_repo_index.py - Otomatik repo index oluşturma
-├── demo_repo/        - Demo repository ve paketler
+├── alp/              - Main package module
+│   ├── cli.py        - CLI commands (install, remove, update, search, list)
+│   ├── database.py   - SQLite database management
+│   ├── resolver.py   - Dependency resolver
+│   ├── package.py    - Package format handling (automatic file scanning)
+│   ├── repository.py - Repository management
+│   ├── downloader.py - Download and verification
+│   └── transaction.py- Transaction log system
+├── tools/            - Utility tools
+│   └── generate_repo_index.py - Automatic repo index generation
+├── examples/         - Build system examples (CMake, Autotools, etc.)
+├── demo_repo/        - Demo repository with packages
 ├── alp_data/         - Runtime data (database, cache, logs)
-├── alp_cli.py        - Ana CLI giriş noktası
+├── alp_cli.py        - Main CLI entry point
 ├── test_alp.sh       - Test script
-├── create_demo_package.py - Demo paket oluşturma
-├── README.md         - Türkçe kullanım kılavuzu
-├── PACKAGE_GUIDE.md  - İngilizce detaylı paket yönetimi kılavuzu
-├── ARCHITECTURE.md   - İngilizce mimari dokümantasyon
-└── LICENSE           - GPLv3 lisans
+├── create_demo_package.py - Demo package creation
+├── README.md         - English usage guide
+├── PACKAGE_GUIDE.md  - English detailed package management guide
+├── ARCHITECTURE.md   - English architecture documentation
+└── LICENSE           - GPLv3 license
 ```
 
-## Paket Formatı (.alp)
-YAML metadata + tar.gz arşiv kombinasyonu
-- Metadata: Bağımlılıklar, versiyon, checksums, **otomatik dosya listesi**
-- İçerik: Binary/source dosyalar
+## Package Format (.alp)
+YAML metadata + tar.gz archive combination
+- Metadata: Dependencies, version, checksums, **automatic file list**
+- Content: Binary/source files
 
-## Teknik Detaylar
+## Technical Details
 
-### Güvenlik Özellikleri
-- SHA256 checksum doğrulama
-- file:// path validation (.alp uzantısı kontrolü)
-- Transaction log ile audit trail
+### Security Features
+- SHA256 checksum verification
+- file:// path validation (.alp extension check)
+- Transaction log with audit trail
 
-### Özellikler
-- ✅ Hızlı bağımlılık çözümleme (version constraint enforcement)
-- ✅ Upgrade desteği (in-place update)
-- ✅ Snapshot-based rollback (upgrade'lerde eski versiyon restore)
-- ✅ Transaction logging (error handling ile)
-- ✅ Repository management (file:// ve HTTP desteği)
+### Features
+- ✅ Fast dependency resolution (version constraint enforcement)
+- ✅ Upgrade support (in-place update)
+- ✅ Snapshot-based rollback (restore old version on upgrade)
+- ✅ Transaction logging (with error handling)
+- ✅ Repository management (file:// and HTTP support)
 - ✅ Checksum verification
 - ✅ Conflict detection
-- ✅ **Otomatik dosya taraması** - Binlerce dosya manuel listelemeye gerek yok!
+- ✅ **Automatic file scanning** - No manual file listing needed for thousands of files!
 
-### Paket Oluşturma Workflow
-1. **Kaynak kodu derle**: `./configure && make`
-2. **DESTDIR'e kur**: `make install DESTDIR=/tmp/staging`
-3. **ALP paketi oluştur**: `Package.create_package()` otomatik tüm dosyaları tarar
-4. **Repository index oluştur**: `tools/generate_repo_index.py` ile otomatik
+### Package Creation Workflow
+1. **Compile source code**: `./configure && make` (or CMake, Meson, Cargo, etc.)
+2. **Install to DESTDIR**: `make install DESTDIR=/tmp/staging`
+3. **Create ALP package**: `Package.create_package()` automatically scans all files
+4. **Generate repository index**: Automatic with `tools/generate_repo_index.py`
 
-### Gelecek Geliştirmeler (Önerilen)
-- Paralel paket indirme
-- Atomic güncellemeler
-- Delta paketler
-- Kaynak tabanlı paket derleme
-- GUI arayüz (GTK/Qt)
+### Supported Build Systems
+- Autotools (configure/make)
+- CMake
+- Meson/Ninja
+- Cargo (Rust)
+- Go
+- Python (setuptools/poetry)
+- Any system supporting DESTDIR
+
+### Future Enhancements (Recommended)
+- Parallel package download
+- Atomic updates
+- Delta packages
+- Source-based package compilation
+- GUI interface (GTK/Qt)
 - Test coverage (regression tests)
 
-## Son Değişiklikler
-- 2025-11-03: Proje reorganizasyonu
-  - Tüm dosyalar ve klasörler ALP/ ana klasörü altında organize edildi
-  - PACKAGE_GUIDE.md güncellendi: otomatik dosya taraması açıklandı
-  - tools/generate_repo_index.py eklendi: otomatik repo index oluşturma
-  - Path'ler ve workflow yeni yapıya göre güncellendi
+## Recent Changes
+- 2025-11-03: Project reorganization
+  - All files and folders organized under ALP/ main folder
+  - PACKAGE_GUIDE.md updated: automatic file scanning explained
+  - tools/generate_repo_index.py added: automatic repo index generation
+  - Paths and workflow updated for new structure
+  - Added examples/ directory with build system examples
 
-- 2025-11-03: MVP tamamlandı
-  - Kritik hatalar düzeltildi (dependency version enforcement, upgrade rollback, file validation)
-  - Database upgrade desteği eklendi
-  - Snapshot-based rollback implementasyonu
+- 2025-11-03: MVP completed
+  - Critical bugs fixed (dependency version enforcement, upgrade rollback, file validation)
+  - Database upgrade support added
+  - Snapshot-based rollback implementation
   - Transaction log error handling
-  - Production-ready duruma getirildi
-  - Tam İngilizce lokalizasyon (tüm kullanıcıya yönelik metinler)
+  - Production-ready status achieved
+  - Full English localization (all user-facing text)
 
-## Kullanım
+## Usage
 ```bash
-# ALP dizinine git
+# Navigate to ALP directory
 cd ALP
 
-# Demo repository ekle
+# Add demo repository
 python alp_cli.py add-repo demo-repo "file://$(pwd)/demo_repo"
 
-# Repository güncelle
+# Update repository indexes
 python alp_cli.py update
 
-# Paket ara
+# Search for package
 python alp_cli.py search hello
 
-# Paket kur
+# Install package
 python alp_cli.py install hello-world
 ```
 
-## Lisans
-GPLv3 - Detaylar için LICENSE dosyasına bakın.
+## Key Advantages
+
+### Automatic File Discovery
+Unlike traditional package managers that require manual file listing, ALP automatically discovers all files in the staging directory using `os.walk()`. This means:
+- ✅ Packages with thousands of files are handled automatically
+- ✅ No manual maintenance of file lists
+- ✅ Clean, DESTDIR-based workflow
+- ✅ Works with any build system
+
+### Example: Self-Packaging
+ALP can package itself using ALP! This demonstrates the meta-packaging capability:
+
+```bash
+# Build ALP package using ALP itself
+cd ALP
+python3 << 'EOF'
+from alp.package import Package
+pkg = Package.create_package(
+    name='alp',
+    version='0.1.0',
+    source_dir='/tmp/alp-staging',  # Contains all installed files
+    output_path='alp-0.1.0',
+    metadata_dict={...}
+)
+# Result: alp-0.1.0.alp (20 files automatically discovered)
+EOF
+```
+
+## License
+GPLv3 - See LICENSE file for details.
