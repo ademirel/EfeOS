@@ -1,73 +1,80 @@
-# ALP Mimari Dokümantasyonu
+# ALP Architecture Documentation
 
-## Genel Bakış
+## Overview
 
-ALP, modern paket yönetimi prensipleriyle tasarlanmış modüler bir sistemdir.
+ALP is a modular system designed with modern package management principles.
 
-## Modül Yapısı
+## Module Structure
 
 ### 1. Package (alp/package.py)
-**Sorumluluk**: Paket formatı ve işleme
+**Responsibility**: Package format and processing
 
-- `.alp` format tanımı (YAML metadata + tar.gz data)
-- Paket oluşturma ve yükleme
-- SHA256 checksum hesaplama ve doğrulama
-- Paket içeriği extraction
+- `.alp` format definition (YAML metadata + tar.gz data)
+- Package creation and loading
+- SHA256 checksum calculation and verification
+- Package content extraction
+- **Automatic file discovery** using `os.walk()`
 
-**Önemli Sınıflar**:
-- `PackageMetadata`: Paket meta verisi (dataclass)
-- `Package`: Paket işleme sınıfı
+**Key Classes**:
+- `PackageMetadata`: Package metadata (dataclass)
+- `Package`: Package processing class
+
+**Key Methods**:
+- `create_package()`: Creates .alp package, **automatically scans all files** in source directory
+- `load_package()`: Loads existing .alp package
+- `verify_checksum()`: Verifies package integrity
 
 ### 2. Database (alp/database.py)
-**Sorumluluk**: Kurulu paket durumu yönetimi
+**Responsibility**: Installed package state management
 
-- SQLite tabanlı paket tracking
-- Upgrade desteği (UPDATE OR INSERT)
-- Dependency ve file listesi saklama
-- Repository yönetimi
+- SQLite-based package tracking
+- Upgrade support (UPDATE OR INSERT)
+- Dependency and file list storage
+- Repository management
 
-**Önemli Fonksiyonlar**:
-- `add_package()`: Yeni paket ekle veya güncelle
-- `get_package()`: Tam metadata ile paket bilgisi (files, dependencies dahil)
-- `remove_package()`: Paket ve ilişkili verileri sil
+**Key Functions**:
+- `add_package()`: Add new package or update existing
+- `get_package()`: Get package info with full metadata (files, dependencies included)
+- `remove_package()`: Remove package and associated data
+- `is_package_installed()`: Check package installation status
 
-**Tablolar**:
-- `packages`: Ana paket bilgileri
-- `dependencies`: Paket bağımlılıkları
-- `files`: Paket dosya listesi
-- `repositories`: Repository bilgileri
+**Tables**:
+- `packages`: Main package information
+- `dependencies`: Package dependencies
+- `files`: Package file list
+- `repositories`: Repository information
 
 ### 3. Resolver (alp/resolver.py)
-**Sorumluluk**: Bağımlılık çözümleme
+**Responsibility**: Dependency resolution
 
 - Version constraint tracking
-- Bağımlılık grafiği çözümleme
+- Dependency graph resolution
 - Conflict detection
 - Upgrade requirement detection
 
-**Önemli Algoritmalar**:
+**Key Algorithms**:
 - BFS-based dependency resolution
 - Version comparison (semantic versioning)
-- Re-evaluation mechanism (daha sıkı constraint geldiğinde)
+- Re-evaluation mechanism (when stricter constraints arrive)
 
-**Çıktı**:
+**Output Format**:
 ```python
 {
-    'install': [paket listesi],
-    'conflicts': [çakışan paketler],
-    'missing': [bulunamayan/uyumsuz paketler]
+    'install': [package list],
+    'conflicts': [conflicting packages],
+    'missing': [not found/incompatible packages]
 }
 ```
 
 ### 4. Repository (alp/repository.py)
-**Sorumluluk**: Paket deposu yönetimi
+**Responsibility**: Package repository management
 
-- Repository index güncelleme (HTTP ve file://)
-- Paket arama
-- Metadata sorgulama
+- Repository index updates (HTTP and file://)
+- Package search
+- Metadata queries
 - Index caching
 
-**Index Formatı**:
+**Index Format**:
 ```json
 {
   "name": "repo-name",
@@ -83,25 +90,25 @@ ALP, modern paket yönetimi prensipleriyle tasarlanmış modüler bir sistemdir.
 ```
 
 ### 5. Downloader (alp/downloader.py)
-**Sorumluluk**: Paket indirme ve doğrulama
+**Responsibility**: Package download and verification
 
-- HTTP ve file:// protokol desteği
+- HTTP and file:// protocol support
 - Progress callback
-- Checksum doğrulama
-- Cache yönetimi
+- Checksum verification
+- Cache management
 
-**Güvenlik**:
+**Security**:
 - file:// path validation
-- .alp uzantısı kontrolü
-- Dosya varlık kontrolü
+- .alp extension check
+- File existence verification
 
 ### 6. Transaction (alp/transaction.py)
-**Sorumluluk**: İşlem kayıt sistemi
+**Responsibility**: Transaction logging system
 
 - Transaction logging (append-only)
-- Transaction durumu tracking
+- Transaction state tracking
 - Error handling (corrupted line skip)
-- History yönetimi
+- History management
 
 **Transaction States**:
 - PENDING
@@ -111,24 +118,24 @@ ALP, modern paket yönetimi prensipleriyle tasarlanmış modüler bir sistemdir.
 - ROLLED_BACK
 
 ### 7. CLI (alp/cli.py)
-**Sorumluluk**: Kullanıcı arayüzü
+**Responsibility**: User interface
 
-- Komut işleme (install, remove, search, vb.)
+- Command processing (install, remove, search, etc.)
 - Snapshot-based rollback
 - Progress display
 - Error handling
 
-**Rollback Mekanizması**:
-1. Transaction başlangıcında mevcut paketlerin snapshot'ı alınır
-2. Her paket kurulurken başarısızlık takip edilir
-3. Hata durumunda:
-   - Yeni kurulan paketler silinir
-   - Upgrade edilen paketler eski versiyonuna döndürülür
-   - İndirilen dosyalar temizlenir
+**Rollback Mechanism**:
+1. Snapshot of current packages taken at transaction start
+2. Track failures during each package installation
+3. On error:
+   - Remove newly installed packages
+   - Restore upgraded packages to old version
+   - Clean downloaded files
 
-## Veri Akışı
+## Data Flow
 
-### Paket Kurulumu
+### Package Installation
 ```
 User Request
     ↓
@@ -147,7 +154,7 @@ Database (save metadata)
 Transaction (log success)
 ```
 
-### Hata Durumu Rollback
+### Error Rollback Flow
 ```
 Installation Error
     ↓
@@ -159,18 +166,59 @@ CLI Rollback Handler
 Transaction (log failure)
 ```
 
-## Tasarım Prensipleri
+## Package Creation Workflow
+
+### Traditional Package Managers (Manual File Listing)
+```
+Source Code
+    ↓
+Compile
+    ↓
+Manual file listing (tedious for thousands of files!)
+    ↓
+Create package spec
+    ↓
+Build package
+```
+
+### ALP Approach (Automatic Discovery)
+```
+Source Code
+    ↓
+Compile (cmake/autotools/meson/cargo/etc.)
+    ↓
+Install to DESTDIR staging directory
+    ↓
+ALP automatically scans ALL files (os.walk)
+    ↓
+Create .alp package (no manual listing!)
+```
+
+**Example**:
+```python
+# Even with 10,000 files, no manual listing needed!
+pkg = Package.create_package(
+    name='gcc',
+    version='11.2.0',
+    source_dir='/tmp/gcc-staging',  # Contains all compiled files
+    output_path='gcc-11.2.0',
+    metadata_dict=metadata
+)
+# ALP automatically discovers all 10,000 files!
+```
+
+## Design Principles
 
 ### 1. Separation of Concerns
-Her modül tek bir sorumluluğa sahip ve bağımsız test edilebilir.
+Each module has a single responsibility and can be independently tested.
 
 ### 2. Error Recovery
-Tüm kritik işlemlerde rollback mekanizması mevcut.
+Rollback mechanism available for all critical operations.
 
 ### 3. Data Integrity
-- Checksum doğrulama
+- Checksum verification
 - Transaction logging
-- Database ACID özellikleri
+- Database ACID properties
 
 ### 4. Security
 - Path validation
@@ -182,39 +230,122 @@ Tüm kritik işlemlerde rollback mekanizması mevcut.
 - Repository system
 - Modular design
 
-## Gelecek Geliştirmeler
+### 6. Automatic File Discovery
+- No manual file listing required
+- Works with packages containing thousands of files
+- Clean DESTDIR-based workflow
+- Supports any build system (CMake, Autotools, Meson, Cargo, Go, etc.)
 
-### Öncelik 1: Core Improvements
-- Paralel paket indirme
+## Build System Support
+
+ALP supports any build system through the DESTDIR pattern:
+
+### Autotools
+```bash
+./configure --prefix=/usr
+make
+make install DESTDIR=/tmp/staging
+```
+
+### CMake
+```bash
+cmake . -DCMAKE_INSTALL_PREFIX=/usr
+make
+make install DESTDIR=/tmp/staging
+```
+
+### Meson
+```bash
+meson setup build --prefix=/usr
+ninja -C build
+DESTDIR=/tmp/staging ninja -C build install
+```
+
+### Cargo (Rust)
+```bash
+cargo build --release
+# Manual staging for Rust
+mkdir -p /tmp/staging/usr/bin
+cp target/release/myapp /tmp/staging/usr/bin/
+```
+
+### Go
+```bash
+go build -o myapp
+mkdir -p /tmp/staging/usr/bin
+cp myapp /tmp/staging/usr/bin/
+```
+
+**All of these** feed into the same ALP packaging process:
+```python
+pkg = Package.create_package(
+    name='myapp',
+    version='1.0.0',
+    source_dir='/tmp/staging',
+    output_path='myapp-1.0.0',
+    metadata_dict=metadata
+)
+```
+
+## Future Enhancements
+
+### Priority 1: Core Improvements
+- Parallel package download
 - Atomic upgrades (system snapshot)
-- Delta paketler
+- Delta packages
 
-### Öncelik 2: Advanced Features
-- Kaynak tabanlı paket derleme
+### Priority 2: Advanced Features
+- Source-based package compilation
 - Package signing (GPG)
 - Dependency conflict resolution improvements
 
-### Öncelik 3: UI/UX
+### Priority 3: UI/UX
 - GUI (GTK/Qt)
 - TUI (ncurses)
 - Web interface
 
-## Test Stratejisi
+## Test Strategy
 
-### Unit Tests (Önerilir)
+### Unit Tests (Recommended)
 - Package creation/verification
 - Version comparison
 - Dependency resolution
 - Database operations
+- Automatic file discovery
 
-### Integration Tests (Önerilir)
+### Integration Tests (Recommended)
 - Full install/remove cycle
 - Upgrade scenarios
 - Rollback functionality
 - Conflict detection
+- Large package handling (1000+ files)
 
-### Regression Tests (Kritik)
+### Regression Tests (Critical)
 - Upgrade rollback (snapshot restore)
 - Version constraint enforcement
 - file:// validation
 - Transaction log corruption handling
+- Automatic file scanning with various directory structures
+
+## Key Differentiators
+
+### vs DNF/YUM
+- ✅ Faster dependency resolution
+- ✅ Cleaner package format (YAML + tar.gz)
+- ✅ Built-in rollback mechanism
+- ✅ Automatic file discovery (no manual .spec file maintenance)
+
+### vs APT/DPKG
+- ✅ Simpler package creation workflow
+- ✅ No manual file listing in control files
+- ✅ DESTDIR-based staging (cleaner build process)
+- ✅ Transaction logging
+
+### vs Pacman
+- ✅ Automatic file discovery
+- ✅ Python-based (easier to extend)
+- ✅ Built-in repository index generation tool
+
+## License
+
+GPLv3 - See LICENSE file for details.

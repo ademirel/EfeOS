@@ -1,22 +1,22 @@
-# CMake Uygulaması Paketleme Örneği
+# CMake Application Packaging Example
 
-Bu belge CMake ile derlenen bir uygulamanın nasıl paketleneceğini gösterir.
+This guide demonstrates how to package an application built with CMake.
 
-## Örnek: htop (CMake kullanıyor)
+## Example: htop (Uses CMake)
 
-### 1. Kaynak Kodu İndir ve Derle
+### 1. Download and Compile Source Code
 
 ```bash
-# Kaynak kodu indir
+# Download source code
 wget https://github.com/htop-dev/htop/archive/refs/tags/3.3.0.tar.gz
 tar xzf 3.3.0.tar.gz
 cd htop-3.3.0
 
-# CMake ile build dizini oluştur
+# Create CMake build directory
 mkdir build
 cd build
 
-# Configure (prefix önemli!)
+# Configure (prefix is important!)
 cmake .. \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/usr
@@ -25,21 +25,21 @@ cmake .. \
 make -j$(nproc)
 ```
 
-### 2. DESTDIR'e Kur (Kritik Adım!)
+### 2. Install to DESTDIR (Critical Step!)
 
 ```bash
-# Staging directory oluştur
+# Create staging directory
 STAGING=/tmp/htop-staging
 rm -rf $STAGING
 
-# DESTDIR ile staging'e kur (sisteme değil!)
+# Install to staging with DESTDIR (not to system!)
 make install DESTDIR=$STAGING
 
-# Kontrol et
-tree $STAGING  # veya: find $STAGING
+# Verify
+tree $STAGING  # or: find $STAGING
 ```
 
-**Çıktı örneği:**
+**Example output:**
 ```
 /tmp/htop-staging/
 └── usr/
@@ -59,7 +59,7 @@ tree $STAGING  # veya: find $STAGING
         └── systemd/
 ```
 
-### 3. ALP Paketi Oluştur
+### 3. Create ALP Package
 
 ```bash
 cd /path/to/ALP
@@ -81,7 +81,7 @@ metadata = {
     'license': 'GPL-2.0'
 }
 
-# Otomatik olarak TÜM dosyaları tarar!
+# Automatically scans ALL files!
 pkg = Package.create_package(
     name='htop',
     version='3.3.0',
@@ -90,46 +90,46 @@ pkg = Package.create_package(
     metadata_dict=metadata
 )
 
-print(f"✅ Paket oluşturuldu: {pkg}")
-print(f"   Toplam dosya: {len(pkg.metadata.files)}")
-print(f"   Boyut: {pkg.metadata.size / (1024*1024):.2f} MB")
-print(f"\n📋 Bulunan dosyalar:")
+print(f"✅ Package created: {pkg}")
+print(f"   Total files: {len(pkg.metadata.files)}")
+print(f"   Size: {pkg.metadata.size / (1024*1024):.2f} MB")
+print(f"\n📋 Discovered files:")
 for f in pkg.metadata.files:
     print(f"   - {f}")
 EOF
 ```
 
-### 4. Repository'ye Ekle
+### 4. Add to Repository
 
 ```bash
-# Paketi repository'ye taşı
+# Move package to repository
 mv htop-3.3.0.alp my-repo/packages/
 
-# Repository index'i güncelle
+# Update repository index
 python tools/generate_repo_index.py my-repo/packages \
     --name "my-repo" \
     --description "My Custom Repository"
 ```
 
-### 5. Kur ve Test Et
+### 5. Install and Test
 
 ```bash
-# Repository ekle
+# Add repository
 python alp_cli.py add-repo my-repo "file://$(pwd)/my-repo"
 
-# Index güncelle
+# Update index
 python alp_cli.py update
 
-# Paketi kur
+# Install package
 python alp_cli.py install htop
 
-# Test et
+# Test
 htop --version
 ```
 
-## Diğer CMake Örnekleri
+## Other CMake Examples
 
-### Ninja build sistemi ile
+### Using Ninja build system
 
 ```bash
 cmake -G Ninja .. -DCMAKE_INSTALL_PREFIX=/usr
@@ -147,7 +147,7 @@ make
 make install DESTDIR=/tmp/staging-arm64
 ```
 
-### Debug package oluşturma
+### Creating debug package
 
 ```bash
 cmake .. \
@@ -156,7 +156,7 @@ cmake .. \
 make
 make install DESTDIR=/tmp/staging-debug
 
-# Debug sembollerle paket oluştur
+# Create package with debug symbols
 pkg = Package.create_package(
     name='htop-debug',
     version='3.3.0',
@@ -169,47 +169,47 @@ pkg = Package.create_package(
 )
 ```
 
-## Önemli Noktalar
+## Important Notes
 
-1. **Her zaman DESTDIR kullan** - Sisteme direkt kurulum yapma!
-2. **PREFIX /usr olmalı** - Paket kurulunca doğru yere gitmesi için
-3. **ALP otomatik tarar** - Dosya listesi manuel gerekmiyor
-4. **Bağımlılıkları ekle** - CMake'in bulduğu kütüphaneleri dependencies'e yaz
+1. **Always use DESTDIR** - Never install directly to system!
+2. **PREFIX should be /usr** - So package installs to correct location
+3. **ALP scans automatically** - No manual file listing needed
+4. **Add dependencies** - Write libraries found by CMake to dependencies
 
-## Sorun Giderme
+## Troubleshooting
 
-### DESTDIR çalışmıyor?
+### DESTDIR not working?
 
-Bazı eski CMake projeleri DESTDIR desteklemeyebilir. Çözüm:
+Some old CMake projects may not support DESTDIR. Solution:
 
 ```bash
-# Install prefix'i staging olarak ayarla
+# Set install prefix as staging directory
 cmake .. -DCMAKE_INSTALL_PREFIX=/tmp/staging/usr
 make install
 
-# Paket oluştururken path'i düzelt
+# Adjust path when creating package
 pkg = Package.create_package(
     name='myapp',
     version='1.0.0',
-    source_dir='/tmp/staging',  # usr/ içerir
+    source_dir='/tmp/staging',  # Contains usr/
     ...
 )
 ```
 
-### Dosyalar bulunamadı?
+### Files not found?
 
 ```bash
-# Staging directory'yi kontrol et
+# Check staging directory
 find /tmp/staging -type f
 
-# Boşsa, make install loglarını incele
+# If empty, examine make install logs
 make install VERBOSE=1 DESTDIR=/tmp/staging
 ```
 
-## Sonuç
+## Conclusion
 
-CMake → DESTDIR → ALP paketleme akışı ile:
-- ✅ Binlerce dosya otomatik bulunur
-- ✅ Manuel dosya listesi gerekmez
-- ✅ Sistem temiz kalır
-- ✅ Profesyonel paketler oluşturursunuz
+With the CMake → DESTDIR → ALP packaging workflow:
+- ✅ Thousands of files are automatically discovered
+- ✅ No manual file listing required
+- ✅ System stays clean
+- ✅ You create professional packages
