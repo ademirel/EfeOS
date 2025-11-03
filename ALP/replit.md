@@ -1,7 +1,7 @@
 # ALP - Advanced Linux Packager
 
 ## Project Overview
-Modern, advanced package manager for LFS (Linux From Scratch) based Linux distributions.
+Modern, advanced package manager for EfeOS.
 
 ## Target Features
 - **Fast dependency resolution**: Advanced dependency resolver

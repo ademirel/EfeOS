@@ -1,6 +1,6 @@
 """
 ALP - Advanced Linux Packager
-Modern paket yöneticisi for LFS tabanlı dağıtımlar
+Modern, fast, and reliable package manager for EfeOS
 
 Copyright (C) 2025 ALP Project Contributors
 

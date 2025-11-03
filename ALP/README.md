@@ -1,6 +1,6 @@
 # ALP - Advanced Linux Packager
 
-Modern, fast, and reliable package manager for LFS-based Linux distributions.
+Modern, fast, and reliable package manager for EfeOS.
 
 ## Features
 
