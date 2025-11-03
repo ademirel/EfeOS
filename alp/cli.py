@@ -1,5 +1,5 @@
 """
-LPM - Linux Package Manager
+ALP - Advanced Linux Packager
 Ana CLI arayüzü
 """
 
@@ -16,13 +16,13 @@ from .transaction import TransactionLog, Transaction, TransactionType, Transacti
 from .package import Package
 
 
-class LPMContext:
-    """LPM context sınıfı"""
+class ALPContext:
+    """ALP context sınıfı"""
     
     def __init__(self):
-        db_path = os.getenv('LPM_DB_PATH', './lpm_data/packages.db')
-        cache_dir = os.getenv('LPM_CACHE_DIR', './lpm_data/cache')
-        log_dir = os.getenv('LPM_LOG_DIR', './lpm_data/logs')
+        db_path = os.getenv('ALP_DB_PATH', './alp_data/packages.db')
+        cache_dir = os.getenv('ALP_CACHE_DIR', './alp_data/cache')
+        log_dir = os.getenv('ALP_LOG_DIR', './alp_data/logs')
         
         self.database = PackageDatabase(db_path)
         self.repository = Repository(self.database, cache_dir)
@@ -31,15 +31,15 @@ class LPMContext:
         self.transaction_log = TransactionLog(log_dir)
 
 
-pass_context = click.make_pass_decorator(LPMContext, ensure=True)
+pass_context = click.make_pass_decorator(ALPContext, ensure=True)
 
 
 @click.group()
 @click.version_option(version='0.1.0')
 @click.pass_context
 def cli(ctx):
-    """LPM - Modern Linux Package Manager"""
-    ctx.obj = LPMContext()
+    """ALP - Advanced Linux Packager"""
+    ctx.obj = ALPContext()
 
 
 @cli.command()
@@ -47,7 +47,7 @@ def cli(ctx):
 @click.option('--yes', '-y', is_flag=True, help='Onay sorma')
 @click.option('--no-deps', is_flag=True, help='Bağımlılıkları yükleme')
 @pass_context
-def install(ctx: LPMContext, packages, yes, no_deps):
+def install(ctx: ALPContext, packages, yes, no_deps):
     """Paket kur"""
     click.echo(f"📦 {len(packages)} paket kurulacak...")
     
@@ -197,7 +197,7 @@ def install(ctx: LPMContext, packages, yes, no_deps):
 @click.argument('packages', nargs=-1, required=True)
 @click.option('--yes', '-y', is_flag=True, help='Onay sorma')
 @pass_context
-def remove(ctx: LPMContext, packages, yes):
+def remove(ctx: ALPContext, packages, yes):
     """Paket kaldır"""
     click.echo(f"🗑️  {len(packages)} paket kaldırılacak...")
     
@@ -243,7 +243,7 @@ def remove(ctx: LPMContext, packages, yes):
 @cli.command()
 @click.argument('query', required=True)
 @pass_context
-def search(ctx: LPMContext, query):
+def search(ctx: ALPContext, query):
     """Paket ara"""
     click.echo(f"🔍 '{query}' aranıyor...")
     
@@ -266,7 +266,7 @@ def search(ctx: LPMContext, query):
 @cli.command()
 @click.option('--all', '-a', is_flag=True, help='Tüm mevcut paketleri göster')
 @pass_context
-def list(ctx: LPMContext, all):
+def list(ctx: ALPContext, all):
     """Kurulu paketleri listele"""
     if all:
         click.echo("📦 Mevcut paketler:\n")
@@ -288,7 +288,7 @@ def list(ctx: LPMContext, all):
 
 @cli.command()
 @pass_context
-def update(ctx: LPMContext):
+def update(ctx: ALPContext):
     """Repository indekslerini güncelle"""
     click.echo("🔄 Repository indeksleri güncelleniyor...")
     
@@ -306,7 +306,7 @@ def update(ctx: LPMContext):
 @cli.command()
 @click.option('--limit', '-l', default=10, help='Gösterilecek kayıt sayısı')
 @pass_context
-def history(ctx: LPMContext, limit):
+def history(ctx: ALPContext, limit):
     """İşlem geçmişini göster"""
     click.echo("📜 İşlem geçmişi:\n")
     
@@ -337,7 +337,7 @@ def history(ctx: LPMContext, limit):
 @click.argument('url', required=True)
 @click.option('--priority', '-p', default=100, help='Repository önceliği')
 @pass_context
-def add_repo(ctx: LPMContext, name, url, priority):
+def add_repo(ctx: ALPContext, name, url, priority):
     """Repository ekle"""
     click.echo(f"➕ Repository ekleniyor: {name}")
     
@@ -354,7 +354,7 @@ def add_repo(ctx: LPMContext, name, url, priority):
 
 @cli.command()
 @pass_context
-def list_repos(ctx: LPMContext):
+def list_repos(ctx: ALPContext):
     """Repository'leri listele"""
     click.echo("📚 Repository'ler:\n")
     
@@ -373,7 +373,7 @@ def list_repos(ctx: LPMContext):
 
 @cli.command()
 @pass_context
-def clean(ctx: LPMContext):
+def clean(ctx: ALPContext):
     """Cache temizle"""
     click.echo("🧹 Cache temizleniyor...")
     

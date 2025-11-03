@@ -1,12 +1,12 @@
-# LPM Mimari Dokümantasyonu
+# ALP Mimari Dokümantasyonu
 
 ## Genel Bakış
 
-LPM, modern paket yönetimi prensipleriyle tasarlanmış modüler bir sistemdir.
+ALP, modern paket yönetimi prensipleriyle tasarlanmış modüler bir sistemdir.
 
 ## Modül Yapısı
 
-### 1. Package (lpm/package.py)
+### 1. Package (alp/package.py)
 **Sorumluluk**: Paket formatı ve işleme
 
 - `.lpkg` format tanımı (YAML metadata + tar.gz data)
@@ -18,7 +18,7 @@ LPM, modern paket yönetimi prensipleriyle tasarlanmış modüler bir sistemdir.
 - `PackageMetadata`: Paket meta verisi (dataclass)
 - `Package`: Paket işleme sınıfı
 
-### 2. Database (lpm/database.py)
+### 2. Database (alp/database.py)
 **Sorumluluk**: Kurulu paket durumu yönetimi
 
 - SQLite tabanlı paket tracking
@@ -37,7 +37,7 @@ LPM, modern paket yönetimi prensipleriyle tasarlanmış modüler bir sistemdir.
 - `files`: Paket dosya listesi
 - `repositories`: Repository bilgileri
 
-### 3. Resolver (lpm/resolver.py)
+### 3. Resolver (alp/resolver.py)
 **Sorumluluk**: Bağımlılık çözümleme
 
 - Version constraint tracking
@@ -59,7 +59,7 @@ LPM, modern paket yönetimi prensipleriyle tasarlanmış modüler bir sistemdir.
 }
 ```
 
-### 4. Repository (lpm/repository.py)
+### 4. Repository (alp/repository.py)
 **Sorumluluk**: Paket deposu yönetimi
 
 - Repository index güncelleme (HTTP ve file://)
@@ -82,7 +82,7 @@ LPM, modern paket yönetimi prensipleriyle tasarlanmış modüler bir sistemdir.
 }
 ```
 
-### 5. Downloader (lpm/downloader.py)
+### 5. Downloader (alp/downloader.py)
 **Sorumluluk**: Paket indirme ve doğrulama
 
 - HTTP ve file:// protokol desteği
@@ -95,7 +95,7 @@ LPM, modern paket yönetimi prensipleriyle tasarlanmış modüler bir sistemdir.
 - .lpkg uzantısı kontrolü
 - Dosya varlık kontrolü
 
-### 6. Transaction (lpm/transaction.py)
+### 6. Transaction (alp/transaction.py)
 **Sorumluluk**: İşlem kayıt sistemi
 
 - Transaction logging (append-only)
@@ -110,7 +110,7 @@ LPM, modern paket yönetimi prensipleriyle tasarlanmış modüler bir sistemdir.
 - FAILED
 - ROLLED_BACK
 
-### 7. CLI (lpm/cli.py)
+### 7. CLI (alp/cli.py)
 **Sorumluluk**: Kullanıcı arayüzü
 
 - Komut işleme (install, remove, search, vb.)

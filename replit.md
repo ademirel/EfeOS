@@ -1,14 +1,14 @@
-# LPM - Linux Package Manager
+# ALP - Advanced Linux Packager
 
 ## Proje Özeti
-LFS (Linux From Scratch) tabanlı Linux dağıtımları için modern, yeni nesil paket yöneticisi.
+LFS (Linux From Scratch) tabanlı Linux dağıtımları için modern, gelişmiş paket yöneticisi.
 
 ## Hedef Özellikler
 - **Hızlı bağımlılık çözümleme**: Gelişmiş dependency resolver
 - **Paralel işlemler**: Çoklu paket indirme ve kurulum
 - **Atomic güncellemeler**: Rollback desteği
 - **Transaction log**: Tüm işlemler kayıt altında
-- **Yeni paket formatı**: .lpkg (LFS Package) formatı
+- **Yeni paket formatı**: .lpkg (Advanced Linux Package) formatı
 
 ## Mevcut Durum
 - ✅ MVP tamamlandı ve production-ready
@@ -17,7 +17,7 @@ LFS (Linux From Scratch) tabanlı Linux dağıtımları için modern, yeni nesil
 
 ## Proje Yapısı
 ```
-lpm/              - Ana paket modülü
+alp/              - Ana paket modülü
 ├── cli.py        - CLI komutları (install, remove, update, search, list)
 ├── database.py   - SQLite veritabanı yönetimi
 ├── resolver.py   - Bağımlılık çözümleyici

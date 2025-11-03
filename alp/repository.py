@@ -11,7 +11,7 @@ from typing import List, Dict, Optional
 class Repository:
     """Repository sınıfı"""
     
-    def __init__(self, database, cache_dir: str = "/var/cache/lpm/repos"):
+    def __init__(self, database, cache_dir: str = "/var/cache/alp/repos"):
         self.database = database
         self.cache_dir = cache_dir
         self._ensure_cache_dir()

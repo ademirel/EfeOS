@@ -11,7 +11,7 @@ from typing import Optional, Callable
 class Downloader:
     """Paket indirici"""
     
-    def __init__(self, cache_dir: str = "/var/cache/lpm"):
+    def __init__(self, cache_dir: str = "/var/cache/alp"):
         self.cache_dir = cache_dir
         self._ensure_cache_dir()
     

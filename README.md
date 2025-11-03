@@ -1,4 +1,4 @@
-# LPM - Linux Package Manager
+# ALP - Advanced Linux Packager
 
 Modern, hızlı ve güvenilir paket yöneticisi - LFS tabanlı Linux dağıtımları için.
 
@@ -30,43 +30,43 @@ pip install -r requirements.txt
 
 ```bash
 # Paket kur
-python lpm_cli.py install <paket_adı>
+python alp_cli.py install <paket_adı>
 
 # Paket kaldır
-python lpm_cli.py remove <paket_adı>
+python alp_cli.py remove <paket_adı>
 
 # Paket ara
-python lpm_cli.py search <arama_terimi>
+python alp_cli.py search <arama_terimi>
 
 # Kurulu paketleri listele
-python lpm_cli.py list
+python alp_cli.py list
 
 # Tüm mevcut paketleri göster
-python lpm_cli.py list --all
+python alp_cli.py list --all
 
 # Repository güncelle
-python lpm_cli.py update
+python alp_cli.py update
 
 # İşlem geçmişi
-python lpm_cli.py history
+python alp_cli.py history
 
 # Cache temizle
-python lpm_cli.py clean
+python alp_cli.py clean
 ```
 
 ### Repository Yönetimi
 
 ```bash
 # Repository ekle
-python lpm_cli.py add-repo <isim> <url>
+python alp_cli.py add-repo <isim> <url>
 
 # Repository'leri listele
-python lpm_cli.py list-repos
+python alp_cli.py list-repos
 ```
 
 ## Paket Formatı (.lpkg)
 
-LPM, kendi özel paket formatını kullanır:
+ALP, kendi özel paket formatını kullanır:
 
 **Yapı:**
 ```
@@ -101,8 +101,8 @@ files:
 ### Proje Yapısı
 
 ```
-lpm/
-├── lpm/
+alp/
+├── alp/
 │   ├── __init__.py      # Paket başlatma
 │   ├── cli.py           # CLI komutları
 │   ├── database.py      # SQLite veritabanı
@@ -111,7 +111,7 @@ lpm/
 │   ├── repository.py    # Repository yönetimi
 │   ├── downloader.py    # İndirme ve doğrulama
 │   └── transaction.py   # Transaction log
-├── lpm_cli.py           # Ana giriş noktası
+├── alp_cli.py           # Ana giriş noktası
 ├── requirements.txt     # Python bağımlılıkları
 └── README.md
 ```
@@ -119,9 +119,9 @@ lpm/
 ## Ortam Değişkenleri
 
 ```bash
-LPM_DB_PATH=/var/lib/lpm/packages.db      # Veritabanı konumu
-LPM_CACHE_DIR=/var/cache/lpm              # Cache dizini
-LPM_LOG_DIR=/var/log/lpm                  # Log dizini
+ALP_DB_PATH=/var/lib/alp/packages.db      # Veritabanı konumu
+ALP_CACHE_DIR=/var/cache/alp              # Cache dizini
+ALP_LOG_DIR=/var/log/alp                  # Log dizini
 ```
 
 ## Lisans

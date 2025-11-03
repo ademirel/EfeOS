@@ -83,7 +83,7 @@ class Transaction:
 class TransactionLog:
     """Transaction log yöneticisi"""
     
-    def __init__(self, log_dir: str = "/var/log/lpm"):
+    def __init__(self, log_dir: str = "/var/log/alp"):
         self.log_dir = log_dir
         self.log_file = os.path.join(log_dir, "transactions.log")
         self._ensure_log_dir()

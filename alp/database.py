@@ -12,7 +12,7 @@ from datetime import datetime
 class PackageDatabase:
     """Paket veritabanı sınıfı"""
     
-    def __init__(self, db_path: str = "/var/lib/lpm/packages.db"):
+    def __init__(self, db_path: str = "/var/lib/alp/packages.db"):
         self.db_path = db_path
         self._ensure_db_dir()
         self.conn = sqlite3.connect(self.db_path)

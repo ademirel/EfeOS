@@ -1,5 +1,5 @@
 """
-LPM - Linux Package Manager
+ALP - Advanced Linux Packager
 Modern paket yöneticisi for LFS tabanlı dağıtımlar
 """
 

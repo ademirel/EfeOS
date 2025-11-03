@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
 Demo paket oluşturma scripti
-LPM formatında örnek paketler oluşturur
+ALP formatında örnek paketler oluşturur
 """
 
 import os
 import sys
-from lpm.package import Package, PackageMetadata
+from alp.package import Package, PackageMetadata
 
 def create_hello_world_package():
     """Hello World paketi oluştur"""
@@ -15,7 +15,7 @@ def create_hello_world_package():
     
     with open("demo_packages/hello-world/usr/bin/hello", "w") as f:
         f.write("#!/bin/bash\n")
-        f.write("echo 'Hello, World from LPM!'\n")
+        f.write("echo 'Hello, World from ALP!'\n")
     
     os.chmod("demo_packages/hello-world/usr/bin/hello", 0o755)
     
@@ -25,7 +25,7 @@ def create_hello_world_package():
         'dependencies': [],
         'conflicts': [],
         'provides': ['hello'],
-        'maintainer': 'demo@lpm.local',
+        'maintainer': 'demo@alp.local',
         'homepage': 'https://example.com/hello-world',
         'license': 'MIT'
     }
@@ -57,7 +57,7 @@ def create_example_lib_package():
         'dependencies': [],
         'conflicts': [],
         'provides': ['libexample'],
-        'maintainer': 'demo@lpm.local',
+        'maintainer': 'demo@alp.local',
         'homepage': 'https://example.com/example-lib',
         'license': 'GPL-3.0'
     }
@@ -83,7 +83,7 @@ if __name__ == '__main__':
         create_example_lib_package()
         print("\n✅ Tüm demo paketleri oluşturuldu!")
         print("\nDemo repository'yi kullanmak için:")
-        print("  python lpm_cli.py add-repo demo-repo file://$(pwd)/demo_repo")
+        print("  python alp_cli.py add-repo demo-repo file://$(pwd)/demo_repo")
         
     except Exception as e:
         print(f"\n❌ Hata: {e}")
