@@ -1,0 +1,82 @@
+{
+  "name": "demo-repo",
+  "description": "LPM Demo Repository",
+  "version": "1.0",
+  "packages": [
+    {
+      "name": "hello-world",
+      "version": "1.0.0",
+      "description": "Basit Hello World uygulaması",
+      "architecture": "x86_64",
+      "dependencies": [],
+      "conflicts": [],
+      "provides": ["hello"],
+      "maintainer": "demo@lpm.local",
+      "homepage": "https://example.com/hello-world",
+      "license": "MIT",
+      "size": 320,
+      "checksum": "5ce06eabfe5bf0db1c94590f83d615e6661a9acae53cbce5f900ff94309d0847",
+      "files": ["usr/bin/hello"]
+    },
+    {
+      "name": "example-lib",
+      "version": "2.1.0",
+      "description": "Örnek kütüphane paketi",
+      "architecture": "x86_64",
+      "dependencies": [],
+      "conflicts": [],
+      "provides": ["libexample"],
+      "maintainer": "demo@lpm.local",
+      "homepage": "https://example.com/example-lib",
+      "license": "GPL-3.0",
+      "size": 368,
+      "checksum": "ec6b40839198fcf197f56e96d0b5573612862595387dd08cb323985ddaa0872b",
+      "files": ["usr/lib/libexample.so"]
+    },
+    {
+      "name": "myapp",
+      "version": "3.0.1",
+      "description": "Bağımlılıklı örnek uygulama",
+      "architecture": "x86_64",
+      "dependencies": ["example-lib>=2.0.0", "hello-world>=1.0.0"],
+      "conflicts": [],
+      "provides": ["myapp"],
+      "maintainer": "demo@lpm.local",
+      "homepage": "https://example.com/myapp",
+      "license": "Apache-2.0",
+      "size": 16384,
+      "checksum": "demo_checksum_myapp",
+      "files": ["usr/bin/myapp"]
+    },
+    {
+      "name": "gcc",
+      "version": "11.2.0",
+      "description": "GNU Compiler Collection",
+      "architecture": "x86_64",
+      "dependencies": [],
+      "conflicts": [],
+      "provides": ["gcc", "cc"],
+      "maintainer": "demo@lpm.local",
+      "homepage": "https://gcc.gnu.org",
+      "license": "GPL-3.0",
+      "size": 524288000,
+      "checksum": "demo_checksum_gcc",
+      "files": ["usr/bin/gcc", "usr/lib/gcc"]
+    },
+    {
+      "name": "glibc",
+      "version": "2.35.0",
+      "description": "GNU C Library",
+      "architecture": "x86_64",
+      "dependencies": [],
+      "conflicts": [],
+      "provides": ["libc"],
+      "maintainer": "demo@lpm.local",
+      "homepage": "https://www.gnu.org/software/libc/",
+      "license": "LGPL-2.1",
+      "size": 209715200,
+      "checksum": "demo_checksum_glibc",
+      "files": ["lib/libc.so.6"]
+    }
+  ]
+}
